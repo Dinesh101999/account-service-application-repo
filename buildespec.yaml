@@ -1,0 +1,37 @@
+version: 0.2
+
+
+phases:
+  install:
+    runtime-version:
+      java: corretto 21
+  pre_build:
+    command:
+      - mvn clean install -Dskiptest
+      - echo logging in to amazon ECR...
+      - aws --version
+      - $REPOSITORY_URI=347204345880.dkr.ecr.ap-southeast-2.amazonaws.com/account-service-repository | account-service-repository
+      - aws ecr login-password --region ap-southeast-2 | docker login --username AWS --password-stdin $REPOSITORY_URI
+      - COMMIT_HASH = $(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7
+      - IMAGE_TAG=BUILD-$(echo $CODEBUILD_BUILD_ID | awk -F":" '{print $2}')
+  build:
+    command:
+      - echo Build started on '$date'
+      - echo Building docker image...
+      - docker build -t $REPOSITORY_URI:latest
+      - docker tag $REPOSITORY_URI:latest $REPOSITORY_URI:$IMAGE_TAG
+  post_build:
+    command:
+      - echo Build Completed on '$date'
+      - echo pushing the Docker image...
+      - Docker push $REPOSITORY_URI:latest
+      - Docker push $REPOSITORY_URI:$IMAGE_TAG
+      - echo Writing the image definitions file...
+      - printf '[{"name":"account-service-repository" , "imageUri":"%s"}]' $RESPOSITORY_URI:$IMAGE_TAG> imagedefinitions.json
+      - cat imagedefinitions.json
+artifacts:
+  files:
+    - imagedefinitions.json
+    - target/accountService.jar
+
+

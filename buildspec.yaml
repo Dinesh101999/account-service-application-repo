@@ -6,7 +6,7 @@ phases:
     runtime-version:
       java: corretto 21
   pre_build:
-    command:
+    commands:
       - mvn clean install -Dskiptest
       - echo logging in to amazon ECR...
       - aws --version
@@ -15,13 +15,13 @@ phases:
       - COMMIT_HASH = $(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7
       - IMAGE_TAG=BUILD-$(echo $CODEBUILD_BUILD_ID | awk -F":" '{print $2}')
   build:
-    command:
+    commands:
       - echo Build started on '$date'
       - echo Building docker image...
       - docker build -t $REPOSITORY_URI:latest
       - docker tag $REPOSITORY_URI:latest $REPOSITORY_URI:$IMAGE_TAG
   post_build:
-    command:
+    commands:
       - echo Build Completed on '$date'
       - echo pushing the Docker image...
       - Docker push $REPOSITORY_URI:latest

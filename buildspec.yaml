@@ -12,21 +12,21 @@ phases:
       - aws --version
       - REPOSITORY_URI=347204345880.dkr.ecr.ap-southeast-2.amazonaws.com/account-service-repository/account-service-repository
       - aws ecr get-login-password --region ap-southeast-2 | docker login --username AWS --password-stdin $REPOSITORY_URI
-      - COMMIT_HASH = $(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7
+      - COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
       - IMAGE_TAG=BUILD-$(echo $CODEBUILD_BUILD_ID | awk -F":" '{print $2}')
   build:
     commands:
       - echo Build started on '$date'
-      - echo Building docker image...
-      - docker build -t $REPOSITORY_URI:latest
+      - echo Building the Docker image...
+      - docker build -t $REPOSITORY_URI:latest .
       - docker tag $REPOSITORY_URI:latest $REPOSITORY_URI:$IMAGE_TAG
   post_build:
     commands:
-      - echo Build Completed on '$date'
-      - echo pushing the Docker image...
-      - Docker push $REPOSITORY_URI:latest
-      - Docker push $REPOSITORY_URI:$IMAGE_TAG
-      - echo Writing the image definitions file...
+      - echo Build completed on 'date'
+      - echo Pushing the Docker images...
+      - docker push $REPOSITORY_URI:latest
+      - docker push $REPOSITORY_URI:$IMAGE_TAG
+      - echo Writing image definitions file..
       - printf '[{"name":"account-service-repository" , "imageUri":"%s"}]' $RESPOSITORY_URI:$IMAGE_TAG> imagedefinitions.json
       - cat imagedefinitions.json
 artifacts:

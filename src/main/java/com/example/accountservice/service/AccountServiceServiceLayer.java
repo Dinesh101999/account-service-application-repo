@@ -45,4 +45,7 @@ public class AccountServiceServiceLayer {
         );
         return receiverBalance.getBalance();
      }
+     public AccountService addAccountUser(AccountService accountService){
+         return accountServiceRepository.save(accountService);
+     }
 }

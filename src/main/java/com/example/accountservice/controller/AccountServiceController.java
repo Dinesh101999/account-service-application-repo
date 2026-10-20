@@ -1,6 +1,7 @@
 package com.example.accountservice.controller;
 
 
+import com.example.accountservice.model.AccountService;
 import com.example.accountservice.model.TransferRequest;
 import com.example.accountservice.service.AccountServiceServiceLayer;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +18,11 @@ public class AccountServiceController {
     public AccountServiceController (AccountServiceServiceLayer accountServiceServiceLayer){
         this.accountServiceServiceLayer = accountServiceServiceLayer;
     }
+
+    @PostMapping("/addUserDetails")
+        public ResponseEntity<AccountService>  addAccountUser(@RequestBody AccountService accountService){
+            return ResponseEntity.ok(accountServiceServiceLayer.addAccountUser(accountService));
+        }
 
     @PostMapping("/transfer")
     public ResponseEntity<String> transferMoney(@RequestBody TransferRequest transferRequest){

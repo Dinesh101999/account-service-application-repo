@@ -36,4 +36,14 @@ public class AccountServiceController {
         BigDecimal balanceAmount = accountServiceServiceLayer.getBalance(receiverId);
         return ResponseEntity.ok(balanceAmount);
     }
+
+    @PostMapping("/transfer-saga")
+    public ResponseEntity<String> transfer(
+            @RequestHeader("Idempotency-Key") String idempotencyKey,
+            @RequestParam Long from,
+            @RequestParam Long to ,
+            @RequestParam BigDecimal amount
+    ){
+        return ResponseEntity.ok(accountServiceServiceLayer.transferMoneyWithSaga(idempotencyKey , from , to , amount));
+    }
 }

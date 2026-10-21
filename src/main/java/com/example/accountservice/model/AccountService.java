@@ -25,4 +25,7 @@ public class AccountService {
     @Column(nullable = false , precision = 12 , scale = 2)
     private BigDecimal balance;
 
+    @Version
+    private Long version;
+
 }
